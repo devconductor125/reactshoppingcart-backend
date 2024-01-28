@@ -1,33 +1,36 @@
-const Sequelize = require('sequelize');
-const config = require('../config/config');
+const Sequelize = require("sequelize");
+const config = require("../config/config");
 
 const sequelize = new Sequelize({
-    database: config.database.dbname,
-    username: config.database.username,
-    password: config.database.password,
-    dialect: config.database.dialect,
-  });
+  database: config.database.dbname,
+  username: config.database.username,
+  password: config.database.password,
+  dialect: config.database.dialect,
+});
 
-// Define your User model here with Sequelize
-const User = sequelize.define('user', {
-  email: {
+const User = sequelize.define("user", {
+  username: {
     type: Sequelize.STRING,
     unique: true,
+    allowNull: false,
   },
   password: {
     type: Sequelize.STRING,
+    allowNull: false,
   },
+  doc: {
+    type: Sequelize.JSON,
+    allowNull: false,
+  }
 });
 
-// Sync the model with the database
 User.sync();
 
-// Helper functions
-const createUser = async ({ email, password }) => {
-  return await User.create({ email, password });
+const createUser = async ({ username, password, jsonData }) => {
+  return await User.create({ username, password, doc: jsonData });
 };
 
-const getUser = async obj => {
+const getUser = async (obj) => {
   return await User.findOne({
     where: obj,
   });
