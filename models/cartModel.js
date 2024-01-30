@@ -27,19 +27,29 @@ const Cart = sequelize.define("cart", {
 	},
 	totalQuantity: {
 		type: Sequelize.INTEGER
-	}
+	},
+  doc: {
+    type: Sequelize.JSON,
+    allowNull: false
+  }
+}, {
+  timestamps: true,
+  createdAt: 'ts_create',
+  updatedAt: 'ts_update',
 });
 
 
 Cart.sync();
 
 const createOrUpdateCart = async ({ userId, products, totalPrice, totalProducts, totalQuantity }) => {
+  const jsonData = { userId, products, totalPrice, totalProducts, totalQuantity };
   const [cart, created] = await Cart.upsert({
     userId,
     products,
     totalPrice,
     totalProducts,
     totalQuantity,
+    doc: jsonData
   }, {
     returning: true,
     where: { userId: userId },
@@ -99,7 +109,7 @@ const getCartByUserId = async (userId) => {
 
 const clearCartByUserId = async (userId) => {
   return await Cart.update(
-    { products: [], totalPrice: 0, totalProducts: 0, totalQuantity: 0 },
+    { products: [], totalPrice: 0, totalProducts: 0, totalQuantity: 0, doc: {} },
     { where: { userId } }
   );
 };

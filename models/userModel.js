@@ -18,16 +18,24 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  type: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   doc: {
     type: Sequelize.JSON,
     allowNull: false,
   }
+}, {
+  timestamps: true,
+  createdAt: 'ts_create',
+  updatedAt: 'ts_update',
 });
 
 User.sync();
 
-const createUser = async ({ username, password, jsonData }) => {
-  return await User.create({ username, password, doc: jsonData });
+const createUser = async ({ username, password, type }) => {
+  return await User.create({ username, password, type, doc: {username, password, type} });
 };
 
 const getUser = async (obj) => {

@@ -8,10 +8,14 @@ const sequelize = new Sequelize({
   dialect: config.database.dialect,
 });
 
-const Product = sequelize.define("product", {
+const Product = sequelize.define("articulos", {
 	doc: {
     type: Sequelize.JSON,
     allowNull: false,
+  },
+  description: {
+    type: Sequelize.TEXT,
+    allowNull: true
   },
   codigo: {
     type: Sequelize.STRING,
@@ -19,20 +23,23 @@ const Product = sequelize.define("product", {
   },
   precio: {
     type: Sequelize.DOUBLE,
-    allowNull: false
   }
+}, {
+  timestamps: true,
+  createdAt: 'ts_create',
+  updatedAt: 'ts_update',
 });
 
 Product.sync();
 
 const createProduct = async ({ data }) => {
-  return await Product.create({ doc: data, codigo: data.codigo, precio: data.precio });
+  return await Product.create({ doc: data, codigo: data.codigo, precio: data.precio, description: data.description });
 };
 
 const getProduct = async (obj) => {
   const product = await Product.findOne({
     where: obj,
-    attributes: ['id', 'doc', 'codigo', 'precio']
+    attributes: ['id', 'doc', 'codigo', 'precio', 'description']
   });
 
   if(product == null) {
@@ -50,7 +57,7 @@ const getProduct = async (obj) => {
 
 const getAllProducts = async () => {
   const products = await Product.findAll({
-    attributes: ['id', 'doc', 'codigo', 'precio']
+    attributes: ['id', 'doc', 'codigo', 'precio', 'description']
   });
   return products.map(product => ({
     ...product.get(),
